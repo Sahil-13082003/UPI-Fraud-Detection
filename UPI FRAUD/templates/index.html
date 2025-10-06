@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fraud Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>💻 Fraud Detection 💰</h1>
+        <form method="POST" action="/predict">
+            <label>Step:</label>
+            <input type="number" name="step" required><br>
+
+            <label>Type:</label>
+            <select name="type" required>
+                <option value="CASH_OUT">CASH_OUT</option>
+                <option value="PAYMENT">PAYMENT</option>
+                <option value="CASH_IN">CASH_IN</option>
+                <option value="TRANSFER">TRANSFER</option>
+                <option value="DEBIT">DEBIT</option>
+            </select><br>
+
+            <label>Amount:</label>
+            <input type="number" step="0.01" name="amount" required><br>
+
+            <label>NameOrig:</label>
+            <input type="text" name="nameOrig" required><br>
+
+            <label>Old Balance Orig:</label>
+            <input type="number" step="0.01" name="oldbalanceOrg" required><br>
+
+            <label>New Balance Orig:</label>
+            <input type="number" step="0.01" name="newbalanceOrig" required><br>
+
+            <label>NameDest:</label>
+            <input type="text" name="nameDest" required><br>
+
+            <label>Old Balance Dest:</label>
+            <input type="number" step="0.01" name="oldbalanceDest" required><br>
+
+            <label>New Balance Dest:</label>
+            <input type="number" step="0.01" name="newbalanceDest" required><br>
+
+            <button type="submit">💡 Predict</button>
+        </form>
+        <script>
+            const responses = {
+                "cybercrime": {
+                    en: "Cybercrimes include phishing, ransomware, identity theft, and social engineering attacks. Always verify sources and use strong, unique passwords.",
+                    hi: "साइबर अपराधों में फिशिंग, रैनसमवेयर, पहचान की चोरी और सोशल इंजीनियरिंग हमले शामिल हैं। हमेशा स्रोतों की पुष्टि करें और मजबूत पासवर्ड का उपयोग करें।"
+                },
+                "financial fraud": {
+                    en: "Financial fraud often involves fake calls, fake UPI requests, or investment scams. Never share OTP or banking info.",
+                    hi: "वित्तीय धोखाधड़ी में नकली कॉल, नकली यूपीआई अनुरोध या निवेश घोटाले शामिल होते हैं। कभी भी OTP या बैंकिंग जानकारी साझा न करें।"
+                },
+                "deepfake": {
+                    en: "Deepfakes are AI-generated fake videos or audios. Always double-check news sources and verify authenticity.",
+                    hi: "डीपफेक्स एआई द्वारा बनाए गए नकली वीडियो या ऑडियो होते हैं। हमेशा समाचार स्रोतों की पुष्टि करें और प्रामाणिकता जांचें।"
+                },
+                "privacy": {
+                    en: "Protect your privacy by using 2FA, limiting online sharing, and keeping software up to date.",
+                    hi: "2FA का उपयोग करके, ऑनलाइन जानकारी सीमित करके और सॉफ़्टवेयर को अपडेट रखकर अपनी गोपनीयता की सुरक्षा करें।"
+                },
+                "safety": {
+                    en: "Stay safe by not clicking on unknown links, using antivirus tools, and reporting suspicious activity.",
+                    hi: "अनजान लिंक पर क्लिक न करके, एंटीवायरस टूल का उपयोग करके और संदिग्ध गतिविधि की रिपोर्ट करके सुरक्षित रहें।"
+                }
+            };
+        
+            function sendMessage() {
+                const input = document.getElementById('user-input').value.toLowerCase();
+                const chatBox = document.getElementById('chat-box');
+                let response_en = "Sorry, I don't understand. Try asking about cybercrime, privacy, or deepfakes.";
+                let response_hi = "माफ़ कीजिए, मैं समझ नहीं पाया। कृपया साइबर अपराध, गोपनीयता या डीपफेक्स के बारे में पूछें।";
+        
+                for (const key in responses) {
+                    if (input.includes(key)) {
+                        response_en = responses[key].en;
+                        response_hi = responses[key].hi;
+                        break;
+                    }
+                }
+        
+                chatBox.innerHTML += `<div><strong>You:</strong> ${input}</div>`;
+                chatBox.innerHTML += `<div><strong>Bot:</strong> ${response_en}<br><strong>बॉट:</strong> ${response_hi}</div>`;
+                document.getElementById('user-input').value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        </script>
+        
+        
+        {% if prediction_text %}
+            <p class="result {{ 'fraud' if is_fraud else 'not-fraud' }}"><strong>{{ prediction_text }}</strong></p>
+        {% endif %}
+    </div>
+</body>
+<div class="chat-container">
+    <div class="chat-header">CyberSafe Chatbot 🤖</div>
+    <div class="chat-box" id="chat-box"></div>
+    <p style="color: #ccc; font-size: 12px;">Ask about cybercrime, privacy, deepfakes (पूछें: साइबर अपराध, गोपनीयता, डीपफेक्स)</p>
+    <input type="text" id="user-input" placeholder="Ask about safety, fraud, or deepfakes..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+</html>
